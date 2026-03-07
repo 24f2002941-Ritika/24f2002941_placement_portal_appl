@@ -1,0 +1,8 @@
+<form method="POST">
+<input name="query">
+<button>Search</button>
+</form>
+
+{% for s in students %}
+<p>{{ s.name }}</p>
+{% endfor %}

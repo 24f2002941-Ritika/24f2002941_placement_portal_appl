@@ -1,0 +1,14 @@
+<h2>Companies</h2>
+
+{% for c in companies %}
+
+<p>
+{{ c.name }} - {{ c.approval_status }}
+
+<a href="/admin/company/{{c.id}}/approve">Approve</a>
+<a href="/admin/company/{{c.id}}/reject">Reject</a>
+<a href="/admin/company/{{c.id}}/deactivate">Deactivate</a>
+
+</p>
+
+{% endfor %}
