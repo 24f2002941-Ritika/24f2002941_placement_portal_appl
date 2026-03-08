@@ -1,0 +1,18 @@
+<h2>Placement History</h2>
+
+{% if placements %}
+
+    {% for p in placements %}
+
+        <p>
+        Company ID: {{ p.company_id }} <br>
+        Salary: {{ p.salary }}
+        </p>
+
+    {% endfor %}
+
+{% else %}
+
+<p>No placements yet.</p>
+
+{% endif %}

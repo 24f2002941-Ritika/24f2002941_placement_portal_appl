@@ -292,12 +292,31 @@ def update_application_status(id, status):
 
     application = Application.query.get(id)
 
+    if not application:
+        return "Application not found"
+
     application.status = status
+
+    if status == "Placed":
+
+        existing = Placement.query.filter_by(
+            student_id=application.student_id,
+            company_id=application.job.company_id
+        ).first()
+
+        if not existing:
+
+            placement = Placement(
+                student_id=application.student_id,
+                company_id=application.job.company_id,
+                salary=application.job.salary
+            )
+
+            db.session.add(placement)
 
     db.session.commit()
 
-    return redirect("/company/dashboard")
-
+    return redirect(request.referrer)
 @app.route("/company/job/applications/<int:id>")
 def job_applications(id):
 
@@ -405,10 +424,26 @@ def student_dashboard():
         "student_dashboard.html",
         jobs=jobs
     )
+from datetime import datetime
+
 @app.route("/student/apply/<int:job_id>")
 def apply_job(job_id):
 
     student_id = session.get("student")
+
+    if not student_id:
+        return redirect("/student/login")
+
+    job = JobPosition.query.get(job_id)
+
+    if job.status != "Approved":
+        return "This placement drive is not open for applications."
+
+    if job.deadline:
+        deadline_date = datetime.strptime(job.deadline, "%Y-%m-%d")
+
+        if deadline_date < datetime.now():
+            return "Application deadline has passed."
 
     existing = Application.query.filter_by(
         student_id=student_id,
@@ -416,12 +451,13 @@ def apply_job(job_id):
     ).first()
 
     if existing:
-        return "You have already applied for this job"
+        return "You have already applied for this job."
 
     application = Application(
         student_id=student_id,
         drive_id=job_id,
-        status="Applied"
+        status="Applied",
+        application_date=datetime.now()
     )
 
     db.session.add(application)
@@ -440,13 +476,19 @@ def student_applications():
         applications=applications
     )
 @app.route("/student/placements")
-def placement_history():
+def student_placements():
 
     student_id = session.get("student")
 
+    if not student_id:
+        return redirect("/student/login")
+
     placements = Placement.query.filter_by(student_id=student_id).all()
 
-    return render_template("placement_history.html", placements=placements)
+    return render_template(
+        "student_placements.html",
+        placements=placements
+    )
 @app.route("/student/profile", methods=["GET","POST"])
 def student_profile():
 
