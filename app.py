@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-from models import db, Admin, Student, Company, JobPosition, Application
+from models import db, Student, Company, JobPosition, Application, Placement
 
 app = Flask(__name__)
 app.secret_key = "secret"
@@ -9,10 +9,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-
 @app.route("/")
 def home():
-    return redirect("/admin/login")
+    return render_template("home.html")
 
 
 @app.route("/admin/login", methods=["GET","POST"])
@@ -200,13 +199,10 @@ def company_login():
         company = Company.query.filter_by(email=email).first()
 
         if company and company.password == password and company.approval_status == "Approved":
-
             session["company"] = company.id
-
             return redirect("/company/dashboard")
 
     return render_template("company_login.html")
-
 @app.route("/company/dashboard")
 def company_dashboard():
 
@@ -424,6 +420,33 @@ def student_dashboard():
         "student_dashboard.html",
         jobs=jobs
     )
+@app.route("/company/job/delete/<int:id>")
+def delete_job(id):
+
+    job = JobPosition.query.get(id)
+
+    db.session.delete(job)
+
+    db.session.commit()
+
+    return redirect("/company/dashboard")
+@app.route("/company/job/edit/<int:id>", methods=["GET","POST"])
+def edit_job(id):
+
+    job = JobPosition.query.get(id)
+
+    if request.method == "POST":
+
+        job.job_title = request.form["title"]
+        job.job_description = request.form["description"]
+        job.eligibility = request.form["eligibility"]
+        job.salary = request.form["salary"]
+
+        db.session.commit()
+
+        return redirect("/company/dashboard")
+
+    return render_template("edit_job.html", job=job)
 from datetime import datetime
 
 @app.route("/student/apply/<int:job_id>")

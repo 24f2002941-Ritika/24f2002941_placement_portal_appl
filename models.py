@@ -34,7 +34,7 @@ class Student(db.Model):
     skills = db.Column(db.String(200))
 
     resume = db.Column(db.String(200))
-
+    active = db.Column(db.Boolean, default=True)
     applications = db.relationship('Application', backref='student', lazy=True)
 
 class JobPosition(db.Model):
