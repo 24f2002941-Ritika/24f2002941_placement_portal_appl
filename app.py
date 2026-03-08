@@ -199,6 +199,7 @@ def company_register():
 
         name = request.form["name"]
         email = request.form["email"]
+     
         password = request.form["password"]
         website = request.form["website"]
 
@@ -213,6 +214,7 @@ def company_register():
             email=email,
             password=password,
             website=website,
+      
             approval_status="Pending"
         )
 
@@ -312,10 +314,10 @@ def create_job():
         return redirect("/company/dashboard")
 
     return render_template("create_job.html")
-@app.route("/company/job/<int:id>/close")
-def close_job(id):
+@app.route("/company/job/close/<int:job_id>")
+def close_job(job_id):
 
-    job = JobPosition.query.get(id)
+    job = JobPosition.query.get(job_id)
 
     job.status = "Closed"
 
@@ -400,17 +402,29 @@ def reject_student(id):
     db.session.commit()
 
     return redirect(request.referrer)
-@app.route("/company/application/select/<int:id>")
-def select_student(id):
+@app.route("/company/application/select/<int:app_id>")
+def select_application(app_id):
 
-    application = Application.query.get(id)
+    application = Application.query.get_or_404(app_id)
 
     application.status = "Selected"
 
+    existing = Placement.query.filter_by(
+        student_id=application.student_id,
+        job_id=application.job_id
+    ).first()
+
+    if not existing:
+        placement = Placement(
+            student_id=application.student_id,
+            job_id=application.job_id,
+            salary=application.job.salary
+        )
+        db.session.add(placement)
+
     db.session.commit()
 
-    return redirect(request.referrer)
-
+    return redirect("/company/job/applications/" + str(application.job_id))
 @app.route("/student/register", methods=["GET","POST"])
 def student_register():
 
@@ -419,27 +433,22 @@ def student_register():
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
-        education = request.form["education"]
-        skills = request.form["skills"]
 
-        resume = request.files["resume"]
-        resume_path = "static/resumes/" + resume.filename
-        resume.save(resume_path)
+        existing = Student.query.filter_by(email=email).first()
+
+        if existing:
+            return "Email already exists"
 
         student = Student(
             name=name,
             email=email,
-            password=password,
-            education=education,
-            skills=skills,
-            resume=resume_path
+            password=password
         )
 
         db.session.add(student)
         db.session.commit()
-        flash("Student registered successfully")
-        return render_template("student_register_success.html")
-        
+
+        return redirect("/student/login")
 
     return render_template("student_register.html")
 @app.route("/student/login", methods=["GET","POST"])
@@ -453,14 +462,14 @@ def student_login():
         student = Student.query.filter_by(email=email).first()
 
         if not student:
-            flash("Student does not exist")
+            flash("Student not found")
             return redirect("/student/login")
 
         if student.password != password:
-            flash("Incorrect password")
+            flash("Invalid password")
             return redirect("/student/login")
 
-        session["student"] = student.id
+        session["student_id"] = student.id
 
         return redirect("/student/dashboard")
 
@@ -485,10 +494,52 @@ def student_dashboard():
         "student_dashboard.html",
         jobs=jobs
     )
+@app.route("/student/edit_profile", methods=["GET", "POST"])
+def edit_profile():
+
+    if "student" not in session:
+        return redirect("/student/login")
+
+    student = Student.query.get(session["student"])
+
+    if request.method == "POST":
+
+        student.name = request.form["name"]
+        student.education = request.form["education"]
+        student.skills = request.form["skills"]
+
+        resume = request.files["resume"]
+
+        if resume and resume.filename != "":
+            import os
+            from werkzeug.utils import secure_filename
+
+            filename = secure_filename(resume.filename)
+
+            upload_folder = os.path.join(app.root_path, "static", "resumes")
+
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+
+            filepath = os.path.join(upload_folder, filename)
+
+            resume.save(filepath)
+
+            student.resume = filename
+
+        db.session.commit()
+
+        return redirect("/student/dashboard")
+
+    return render_template("student_edit_profile.html", student=student)
 @app.route("/company/job/delete/<int:id>")
 def delete_job(id):
 
-    job = JobPosition.query.get(id)
+    job = JobPosition.query.get_or_404(id)
+
+    Application.query.filter_by(job_id=id).delete()
+
+    Placement.query.filter_by(job_id=id).delete()
 
     db.session.delete(job)
 
@@ -517,7 +568,12 @@ from datetime import datetime
 @app.route("/student/apply/<int:job_id>")
 def apply_job(job_id):
 
-    student_id = session.get("student")
+    student_id = session.get("student_id")
+
+    job = JobPosition.query.get(job_id)
+
+    if job.status == "Closed":
+        return "This job is closed"
 
     existing = Application.query.filter_by(
         student_id=student_id,
@@ -530,14 +586,13 @@ def apply_job(job_id):
     application = Application(
         student_id=student_id,
         job_id=job_id,
-        status="Applied",
-        application_date=datetime.now()
+        status="Applied"
     )
 
     db.session.add(application)
     db.session.commit()
 
-    return redirect("/student/applications")
+    return redirect("/student/jobs")
 @app.route("/student/job/<int:job_id>")
 def student_job_details(job_id):
 
@@ -550,21 +605,24 @@ def student_job_details(job_id):
 @app.route("/student/applications")
 def student_applications():
 
-    student_id = session.get("student")
+    if "student_id" not in session:
+        return redirect("/student/login")
 
-    applications = Application.query.filter_by(student_id=student_id).all()
+    student_id = session["student_id"]
+
+    applications = Application.query.filter_by(
+        student_id=student_id
+    ).all()
 
     return render_template(
         "student_applications.html",
         applications=applications
     )
+
 @app.route("/student/placements")
 def student_placements():
 
-    student_id = session.get("student")
-
-    if not student_id:
-        return redirect("/student/login")
+    student_id = session.get("student_id")
 
     placements = Placement.query.filter_by(student_id=student_id).all()
 
@@ -572,11 +630,15 @@ def student_placements():
         "student_placements.html",
         placements=placements
     )
-@app.route("/student/profile", methods=["GET","POST"])
+import os
+from werkzeug.utils import secure_filename
+@app.route("/student/profile", methods=["GET", "POST"])
 def student_profile():
 
-    student_id = session.get("student")
+    if "student_id" not in session:
+        return redirect("/student/login")
 
+    student_id = session["student_id"]
     student = Student.query.get(student_id)
 
     if request.method == "POST":
@@ -586,10 +648,23 @@ def student_profile():
 
         resume = request.files["resume"]
 
-        if resume.filename != "":
-            path = "static/resumes/" + resume.filename
-            resume.save(path)
-            student.resume = path
+        if resume and resume.filename != "":
+
+            from werkzeug.utils import secure_filename
+            import os
+
+            filename = secure_filename(resume.filename)
+
+            upload_folder = os.path.join(app.root_path, "static", "resumes")
+
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+
+            filepath = os.path.join(upload_folder, filename)
+
+            resume.save(filepath)
+
+            student.resume = filename
 
         db.session.commit()
 

@@ -21,7 +21,6 @@ class Company(db.Model):
 
     approval_status = db.Column(db.String(50))
 
-    jobs = db.relationship('JobPosition', backref='company', lazy=True)
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
@@ -54,6 +53,7 @@ class JobPosition(db.Model):
     status = db.Column(db.String(50))
 
     company_id = db.Column(db.Integer, db.ForeignKey("company.id"))
+    company=db.relationship("Company",backref="jobs")
     
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,6 +67,7 @@ class Application(db.Model):
 class Placement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     salary = db.Column(db.Integer)
-
+    job_id=db.Column(db.Integer,db.ForeignKey('job_position.id'))
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
+    job=db.relationship("JobPosition")

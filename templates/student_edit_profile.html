@@ -1,0 +1,33 @@
+<h2>Edit Profile</h2>
+
+<a href="/student/dashboard">Back to Dashboard</a>
+
+<br><br>
+
+<form method="POST" enctype="multipart/form-data">
+
+<label>Name</label><br>
+<input type="text" name="name" value="{{ student.name }}"><br><br>
+
+<label>Education</label><br>
+<input type="text" name="education" value="{{ student.education }}"><br><br>
+
+<label>Skills</label><br>
+<input type="text" name="skills" value="{{ student.skills }}"><br><br>
+
+<label>Upload Resume</label><br>
+<input type="file" name="resume"><br><br>
+
+<button type="submit">Update Profile</button>
+
+</form>
+
+<br>
+
+{% if student.resume %}
+<p>Current Resume:</p>
+
+<a href="{{ url_for('static', filename='resumes/' + student.resume) }}" target="_blank">
+View Resume
+</a>
+{% endif %}

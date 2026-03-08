@@ -1,18 +1,25 @@
 <h2>Placement History</h2>
-<a href="/student/dashboard"> Back to Dashboard</a>
-{% if placements %}
 
-    {% for p in placements %}
+<a href="/student/dashboard">Back to Dashboard</a>
 
-        <p>
-        Company ID: {{ p.company_id }} <br>
-        Salary: {{ p.salary }}
-        </p>
+<table border="1">
 
-    {% endfor %}
+<tr>
+<th>Company</th>
+<th>Job Title</th>
+<th>Salary</th>
+</tr>
 
-{% else %}
+{% for placement in placements %}
 
-<p>No placements yet.</p>
+<tr>
 
-{% endif %}
+<td>{{ placement.job.company.name if placement.job else "N/A" }}</td>
+<td>{{ placement.job.job_title if placement.job else "N/A" }}</td>
+<td>{{ placement.job.salary if placement.job else "N/A" }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
