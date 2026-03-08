@@ -7,18 +7,32 @@ class Admin(db.Model):
     password = db.Column(db.String(100))
 
 class Company(db.Model):
-    id=db.Column(db.Integer,primary_key=True)
-    name=db.Column(db.String(100),unique=True)
-    hr_contact=db.Column(db.String(200))
-    website=db.Column(db.String(200))
-    approval_status=db.Column(db.String(50))
-    jobs=db.relationship('JobPosition',backref='company',lazy=True)
 
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200))
+
+    email = db.Column(db.String(200), unique=True)
+
+    password = db.Column(db.String(200))
+
+    hr_contact = db.Column(db.String(100))
+
+    website = db.Column(db.String(200))
+
+    approval_status = db.Column(db.String(50))
+
+    jobs = db.relationship('JobPosition', backref='company', lazy=True)
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     email = db.Column(db.String(200), unique=True)
-    cgpa = db.Column(db.Float)
+
+    password = db.Column(db.String(200))
+
+    education = db.Column(db.String(200))
+
+    skills = db.Column(db.String(200))
+
     resume = db.Column(db.String(200))
 
     applications = db.relationship('Application', backref='student', lazy=True)

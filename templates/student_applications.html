@@ -1,0 +1,13 @@
+<h2>Your Applications</h2>
+
+{% for a in applications %}
+
+<p>
+
+Job ID: {{ a.job_id }}
+
+Status: {{ a.status }}
+
+</p>
+
+{% endfor %}

@@ -1,0 +1,17 @@
+<h2>Student Dashboard</h2>
+
+<h3>Available Jobs</h3>
+
+{% for j in jobs %}
+
+<p>
+
+{{ j.job_title }}
+
+{{ j.salary }}
+
+<a href="/student/apply/{{j.id}}">Apply</a>
+
+</p>
+
+{% endfor %}

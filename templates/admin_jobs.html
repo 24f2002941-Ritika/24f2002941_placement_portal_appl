@@ -1,11 +1,12 @@
 <h2>Placement Drives</h2>
-
 {% for j in jobs %}
 
 <p>
+
 {{ j.job_title }} - {{ j.status }}
 
 <a href="/admin/job/{{j.id}}/approve">Approve</a>
+
 <a href="/admin/job/{{j.id}}/reject">Reject</a>
 
 </p>

@@ -167,11 +167,15 @@ def company_register():
     if request.method == "POST":
 
         name = request.form["name"]
+        email = request.form["email"]
+        password = request.form["password"]
         hr = request.form["hr"]
         website = request.form["website"]
 
         company = Company(
             name=name,
+            email=email,
+            password=password,
             hr_contact=hr,
             website=website,
             approval_status="Pending"
@@ -188,16 +192,18 @@ def company_login():
 
     if request.method == "POST":
 
-        name = request.form["name"]
+        email = request.form["email"]
+        password = request.form["password"]
 
-        company = Company.query.filter_by(name=name).first()
+        company = Company.query.filter_by(email=email).first()
 
-        if company and company.approval_status == "Approved":
+        if company and company.password == password and company.approval_status == "Approved":
+
             session["company"] = company.id
+
             return redirect("/company/dashboard")
 
     return render_template("company_login.html")
-
 
 @app.route("/company/dashboard")
 def company_dashboard():
@@ -218,18 +224,25 @@ def create_job():
 
     company_id = session.get("company")
 
+    company = Company.query.get(company_id)
+
+    if company.approval_status != "Approved":
+        return "Company not approved yet"
+
     if request.method == "POST":
 
         title = request.form["title"]
         description = request.form["description"]
         eligibility = request.form["eligibility"]
         salary = request.form["salary"]
+        deadline = request.form["deadline"]
 
         job = JobPosition(
             job_title=title,
             job_description=description,
             eligibility=eligibility,
             salary=salary,
+            deadline=deadline,
             status="Pending",
             company_id=company_id
         )
@@ -269,16 +282,7 @@ def update_application(id, status):
     db.session.commit()
 
     return redirect("/company/dashboard")
-@app.route("/company/job/close/<int:id>")
-def close_job(id):
 
-    job = JobPosition.query.get(id)
-
-    job.status = "Closed"
-
-    db.session.commit()
-
-    return redirect("/company/dashboard")
 @app.route("/company/job/applications/<int:id>")
 def job_applications(id):
 
@@ -310,5 +314,146 @@ def reject_student(id):
     db.session.commit()
 
     return redirect(request.referrer)
+@app.route("/company/application/select/<int:id>")
+def select_student(id):
+
+    application = Application.query.get(id)
+
+    application.status = "Selected"
+
+    db.session.commit()
+
+    return redirect(request.referrer)
+
+@app.route("/student/register", methods=["GET","POST"])
+def student_register():
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        email = request.form["email"]
+        password = request.form["password"]
+        education = request.form["education"]
+        skills = request.form["skills"]
+
+        resume = request.files["resume"]
+        resume_path = "static/resumes/" + resume.filename
+        resume.save(resume_path)
+
+        student = Student(
+            name=name,
+            email=email,
+            password=password,
+            education=education,
+            skills=skills,
+            resume=resume_path
+        )
+
+        db.session.add(student)
+        db.session.commit()
+
+        return redirect("/student/login")
+
+    return render_template("student_register.html")
+@app.route("/student/login", methods=["GET","POST"])
+def student_login():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        student = Student.query.filter_by(email=email, password=password).first()
+
+        if student:
+            session["student"] = student.id
+            return redirect("/student/dashboard")
+
+    return render_template("student_login.html")
+@app.route("/student/dashboard", methods=["GET"])
+def student_dashboard():
+
+    query = request.args.get("q")
+
+    if query:
+
+        jobs = JobPosition.query.filter(
+            JobPosition.status == "Approved",
+            JobPosition.job_title.contains(query)
+        ).all()
+
+    else:
+
+        jobs = JobPosition.query.filter_by(status="Approved").all()
+
+    return render_template(
+        "student_dashboard.html",
+        jobs=jobs
+    )
+@app.route("/student/apply/<int:id>")
+def apply_job(id):
+
+    student_id = session.get("student")
+
+    existing = Application.query.filter_by(
+        student_id=student_id,
+        job_id=id
+    ).first()
+
+    if not existing:
+
+        application = Application(
+            student_id=student_id,
+            job_id=id,
+            status="Applied"
+        )
+
+        db.session.add(application)
+        db.session.commit()
+
+    return redirect("/student/dashboard")
+@app.route("/student/applications")
+def student_applications():
+
+    student_id = session.get("student")
+
+    applications = Application.query.filter_by(student_id=student_id).all()
+
+    return render_template(
+        "student_applications.html",
+        applications=applications
+    )
+@app.route("/student/placements")
+def placement_history():
+
+    student_id = session.get("student")
+
+    placements = Placement.query.filter_by(student_id=student_id).all()
+
+    return render_template("placement_history.html", placements=placements)
+@app.route("/student/profile", methods=["GET","POST"])
+def student_profile():
+
+    student_id = session.get("student")
+
+    student = Student.query.get(student_id)
+
+    if request.method == "POST":
+
+        student.education = request.form["education"]
+        student.skills = request.form["skills"]
+
+        resume = request.files["resume"]
+
+        if resume.filename != "":
+            path = "static/resumes/" + resume.filename
+            resume.save(path)
+            student.resume = path
+
+        db.session.commit()
+
+        return redirect("/student/dashboard")
+
+    return render_template("student_profile.html", student=student)
 if __name__ == "__main__":
     app.run(debug=True)
