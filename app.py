@@ -717,5 +717,38 @@ def api_companies():
         })
 
     return jsonify(data)
+@app.route("/api/jobs", methods=["GET"])
+def api_get_jobs():
+
+    jobs = JobPosition.query.all()
+
+    data = []
+
+    for j in jobs:
+        data.append({
+            "job_id": j.id,
+            "company": j.company.name,
+            "job_title": j.job_title,
+            "salary": j.salary,
+            "status": j.status
+        })
+
+    return {"jobs": data}
+@app.route("/api/jobs/<int:job_id>", methods=["GET"])
+def api_get_job(job_id):
+
+    job = JobPosition.query.get(job_id)
+
+    if not job:
+        return {"message": "Job not found"}
+
+    return {
+        "job_id": job.id,
+        "company": job.company.name,
+        "job_title": job.job_title,
+        "description": job.job_description,
+        "salary": job.salary,
+        "status": job.status
+    }
 if __name__ == "__main__":
     app.run(debug=True)
