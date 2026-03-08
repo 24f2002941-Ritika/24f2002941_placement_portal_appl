@@ -129,9 +129,11 @@ def reject_job(id):
 def admin_applications():
 
     applications = Application.query.all()
-    return render_template("admin_applications.html", applications=applications)
 
-
+    return render_template(
+        "admin_applications.html",
+        applications=applications
+    )
 @app.route("/admin/search_students", methods=["GET","POST"])
 def search_students():
 
@@ -214,10 +216,15 @@ def company_dashboard():
 
     jobs = JobPosition.query.filter_by(company_id=company_id).all()
 
+    applications = Application.query.join(JobPosition).filter(
+        JobPosition.company_id == company_id
+    ).all()
+
     return render_template(
         "company_dashboard.html",
         company=company,
-        jobs=jobs
+        jobs=jobs,
+        applications=applications
     )
 @app.route("/company/job/create", methods=["GET","POST"])
 def create_job():
@@ -263,17 +270,25 @@ def close_job(id):
     db.session.commit()
 
     return redirect("/company/dashboard")
-@app.route("/company/job/<int:id>/applications")
-def view_applications(id):
+@app.route("/company/job/applications/<int:job_id>")
+def view_applications(job_id):
 
-    applications = Application.query.filter_by(job_id=id).all()
+    company_id = session.get("company")
+
+    job = JobPosition.query.get(job_id)
+
+    if job.company_id != company_id:
+        return "Unauthorized"
+
+    applications = Application.query.filter_by(drive_id=job_id).all()
 
     return render_template(
         "company_applications.html",
+        job=job,
         applications=applications
     )
 @app.route("/company/application/<int:id>/<status>")
-def update_application(id, status):
+def update_application_status(id, status):
 
     application = Application.query.get(id)
 
@@ -390,26 +405,27 @@ def student_dashboard():
         "student_dashboard.html",
         jobs=jobs
     )
-@app.route("/student/apply/<int:id>")
-def apply_job(id):
+@app.route("/student/apply/<int:job_id>")
+def apply_job(job_id):
 
     student_id = session.get("student")
 
     existing = Application.query.filter_by(
         student_id=student_id,
-        job_id=id
+        drive_id=job_id
     ).first()
 
-    if not existing:
+    if existing:
+        return "You have already applied for this job"
 
-        application = Application(
-            student_id=student_id,
-            job_id=id,
-            status="Applied"
-        )
+    application = Application(
+        student_id=student_id,
+        drive_id=job_id,
+        status="Applied"
+    )
 
-        db.session.add(application)
-        db.session.commit()
+    db.session.add(application)
+    db.session.commit()
 
     return redirect("/student/dashboard")
 @app.route("/student/applications")

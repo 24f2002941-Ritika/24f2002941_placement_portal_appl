@@ -1,18 +1,19 @@
-<h2>Applications</h2>
+<h2>Applications for {{ job.job_title }}</h2>
 
 {% for a in applications %}
 
 <p>
-
-Student {{ a.student_id }}
+Student ID: {{ a.student_id }}
 
 Status: {{ a.status }}
 
-<a href="/company/application/shortlist/{{a.id}}">Shortlist</a>
+<a href="/company/application/{{a.id}}/Shortlisted">Shortlist</a>
 
-<a href="/company/application/select/{{a.id}}">Select</a>
+<a href="/company/application/{{a.id}}/Interview">Interview</a>
 
-<a href="/company/application/reject/{{a.id}}">Reject</a>
+<a href="/company/application/{{a.id}}/Placed">Select</a>
+
+<a href="/company/application/{{a.id}}/Rejected">Reject</a>
 
 </p>
 

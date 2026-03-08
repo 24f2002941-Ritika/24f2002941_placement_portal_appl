@@ -1,7 +1,11 @@
-<h2>Applications</h2>
+<h1>All Applications</h1>
 
-{% for a in applications %}
+{% for app in applications %}
 
-<p>Student {{a.student_id}} applied for Job {{a.job_id}} - {{a.status}}</p>
+<p>
+Student: {{ app.student_id }}
+Drive: {{ app.drive_id }}
+Status: {{ app.status }}
+</p>
 
 {% endfor %}

@@ -1,13 +1,11 @@
-<h2>Your Applications</h2>
+<h1>Your Applications</h1>
 
-{% for a in applications %}
+{% for app in applications %}
 
 <p>
-
-Job ID: {{ a.job_id }}
-
-Status: {{ a.status }}
-
+Drive ID: {{ app.drive_id }}
+Status: {{ app.status }}
+Applied On: {{ app.application_date }}
 </p>
 
 {% endfor %}
