@@ -1,0 +1,17 @@
+<h2>Applications</h2>
+
+{% for a in applications %}
+
+<p>
+
+Student ID: {{ a.student_id }}
+
+Status: {{ a.status }}
+
+<a href="/company/application/shortlist/{{ a.id }}">Shortlist</a>
+
+<a href="/company/application/reject/{{ a.id }}">Reject</a>
+
+</p>
+
+{% endfor %}

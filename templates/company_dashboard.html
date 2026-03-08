@@ -1,0 +1,20 @@
+<h2>Company Dashboard</h2>
+
+<p>{{ company.name }}</p>
+
+<a href="/company/job/create">Create Job</a>
+
+<h3>Your Jobs</h3>
+
+{% for j in jobs %}
+
+<p>
+{{ j.job_title }} - {{ j.status }}
+
+<a href="/company/job/applications/{{ j.id }}">View Applications</a>
+
+<a href="/company/job/close/{{ j.id }}">Close Job</a>
+
+</p>
+
+{% endfor %}

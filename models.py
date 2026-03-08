@@ -25,14 +25,18 @@ class Student(db.Model):
 
 class JobPosition(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
     job_title = db.Column(db.String(200))
     job_description = db.Column(db.Text)
     eligibility = db.Column(db.String(200))
-    deadline = db.Column(db.String(100))
+
+    salary = db.Column(db.Integer)
+
     status = db.Column(db.String(50))
 
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
 
+    applications = db.relationship('Application', backref='job', lazy=True)
     applications = db.relationship('Application', backref='job', lazy=True)
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
