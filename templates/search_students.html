@@ -1,8 +1,14 @@
+<h2>Search Students</h2>
+
 <form method="POST">
-<input name="query">
-<button>Search</button>
+
+<input name="query" placeholder="Student name">
+<button type="submit">Search</button>
+
 </form>
 
 {% for s in students %}
-<p>{{ s.name }}</p>
+
+<p>{{ s.name }} - {{ s.email }}</p>
+
 {% endfor %}

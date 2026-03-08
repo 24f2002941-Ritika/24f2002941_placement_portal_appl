@@ -1,8 +1,14 @@
+<h2>Search Companies</h2>
+
 <form method="POST">
-<input name="query">
-<button>Search</button>
+
+<input name="query" placeholder="Company name">
+<button type="submit">Search</button>
+
 </form>
 
 {% for c in companies %}
-<p>{{ c.name }}</p>
+
+<p>{{ c.name }} - {{ c.approval_status }}</p>
+
 {% endfor %}

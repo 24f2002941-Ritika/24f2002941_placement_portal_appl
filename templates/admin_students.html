@@ -2,8 +2,6 @@
 
 {% for s in students %}
 
-<p>{{ s.name }} - {{ s.email }}
-<a href="/admin/student/{{s.id}}/deactivate">Deactivate</a>
-</p>
+<p>{{ s.name }} - {{ s.email }}</p>
 
 {% endfor %}

@@ -1,5 +1,4 @@
-#hello
-from flask import Flask, render_template, request, redirect,session
+from flask import Flask, render_template, request, redirect, session
 from models import db, Admin, Student, Company, JobPosition, Application
 
 app = Flask(__name__)
@@ -7,12 +6,18 @@ app.secret_key = "secret"
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///placement.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db.init_app(app)
+
+
 @app.route("/")
 def home():
-    return "Placement Portal Running"
+    return redirect("/admin/login")
+
+
 @app.route("/admin/login", methods=["GET","POST"])
 def admin_login():
+
     if request.method == "POST":
 
         username = request.form["username"]
@@ -76,6 +81,18 @@ def reject_company(id):
     company.approval_status = "Rejected"
 
     db.session.commit()
+
+    return redirect("/admin/companies")
+
+
+@app.route("/admin/company/<int:id>/deactivate")
+def deactivate_company(id):
+
+    company = Company.query.get(id)
+    company.approval_status = "Blacklisted"
+
+    db.session.commit()
+
     return redirect("/admin/companies")
 
 
@@ -122,7 +139,10 @@ def search_students():
 
     if request.method == "POST":
         query = request.form["query"]
-        students = Student.query.filter(Student.name.contains(query)).all()
+
+        students = Student.query.filter(
+            Student.name.contains(query)
+        ).all()
 
     return render_template("search_students.html", students=students)
 
@@ -133,32 +153,14 @@ def search_companies():
     companies = []
 
     if request.method == "POST":
+
         query = request.form["query"]
-        companies = Company.query.filter(Company.name.contains(query)).all()
+
+        companies = Company.query.filter(
+            Company.name.contains(query)
+        ).all()
 
     return render_template("search_companies.html", companies=companies)
-
-
-@app.route("/admin/student/<int:id>/deactivate")
-def deactivate_student(id):
-
-    student = Student.query.get(id)
-    student.is_active = False
-
-    db.session.commit()
-
-    return redirect("/admin/students")
-
-
-@app.route("/admin/company/<int:id>/deactivate")
-def deactivate_company(id):
-
-    company = Company.query.get(id)
-    company.is_active = False
-
-    db.session.commit()
-
-    return redirect("/admin/companies")
 
 
 if __name__ == "__main__":
