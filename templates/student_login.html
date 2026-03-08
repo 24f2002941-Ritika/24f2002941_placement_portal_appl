@@ -1,11 +1,32 @@
 <h2>Student Login</h2>
 
+<a href="/">Home</a>
+<hr>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+{% for message in messages %}
+<li style="color:red;">{{ message }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
 <form method="POST">
 
-<input name="email">
+<label>Email</label><br>
+<input type="email" name="email" required><br><br>
 
-<input name="password">
+<label>Password</label><br>
+<input type="password" name="password" required><br><br>
 
-<button>Login</button>
+<button type="submit">Login</button>
 
 </form>
+
+<br>
+
+<p>Don't have an account?</p>
+
+<a href="/student/register">Register as Student</a>

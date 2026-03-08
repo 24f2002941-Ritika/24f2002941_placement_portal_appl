@@ -1,0 +1,27 @@
+<h2>{{ job.job_title }}</h2>
+
+<p><b>Company:</b> {{ job.company.name }}</p>
+
+<p><b>Job Description:</b> {{ job.description }}</p>
+
+<p><b>Eligibility:</b> {{ job.eligibility }}</p>
+
+<p><b>Skills Required:</b> {{ job.skills }}</p>
+
+<p><b>Salary:</b> {{ job.salary }}</p>
+
+<p><b>Application Deadline:</b> {{ job.deadline }}</p>
+
+<hr>
+
+<h3>Company Details</h3>
+
+<p><b>HR Contact:</b> {{ job.company.hr_contact }}</p>
+
+<p><b>Email:</b> {{ job.company.email }}</p>
+
+<p><b>Website:</b> {{ job.company.website }}</p>
+
+<hr>
+
+<a href="/student/apply/{{ job.id }}">Apply</a>

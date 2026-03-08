@@ -54,6 +54,7 @@ class JobPosition(db.Model):
     status = db.Column(db.String(50))
 
     company_id = db.Column(db.Integer, db.ForeignKey("company.id"))
+    
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     application_date = db.Column(db.String(100))
@@ -61,7 +62,8 @@ class Application(db.Model):
 
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
     job_id = db.Column(db.Integer, db.ForeignKey('job_position.id'))
-
+    job=db.relationship("JobPosition",backref="applications")
+    
 class Placement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     salary = db.Column(db.Integer)

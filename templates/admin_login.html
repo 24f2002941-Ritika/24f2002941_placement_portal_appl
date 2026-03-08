@@ -1,9 +1,25 @@
 <h2>Admin Login</h2>
 
+<a href="/">Home</a>
+<hr>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+{% for message in messages %}
+<li style="color:red;">{{ message }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
 <form method="POST">
 
-<input name="username" placeholder="Username">
-<input name="password" placeholder="Password">
+<label>Username</label><br>
+<input type="text" name="username" required><br><br>
+
+<label>Password</label><br>
+<input type="password" name="password" required><br><br>
 
 <button type="submit">Login</button>
 

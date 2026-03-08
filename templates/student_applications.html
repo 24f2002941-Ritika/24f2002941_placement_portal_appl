@@ -1,11 +1,36 @@
-<h1>Your Applications</h1>
+<h2>Your Applications</h2>
+
+<a href="/student/dashboard">Back to Dashboard</a>
+
+<table border="1">
+
+<tr>
+<th>Drive ID</th>
+<th>Company</th>
+<th>Job Title</th>
+<th>Applicants</th>
+<th>Status</th>
+<th>Applied On</th>
+</tr>
 
 {% for app in applications %}
 
-<p>
-Drive ID: {{ app.drive_id }}
-Status: {{ app.status }}
-Applied On: {{ app.application_date }}
-</p>
+<tr>
+
+<td>{{ app.job.id }}</td>
+
+<td>{{ app.job.company.name }}</td>
+
+<td>{{ app.job.job_title }}</td>
+
+<td>{{ app.job.applications|length }}</td>
+
+<td>{{ app.status }}</td>
+
+<td>{{ app.application_date }}</td>
+
+</tr>
 
 {% endfor %}
+
+</table>

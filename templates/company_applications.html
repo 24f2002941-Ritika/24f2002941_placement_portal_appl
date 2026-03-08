@@ -1,20 +1,57 @@
-<h2>Applications for {{ job.job_title }}</h2>
+<h2>Applicants for {{ job.job_title }}</h2>
 
-{% for a in applications %}
+<a href="/company/dashboard">Back to Dashboard</a>
 
-<p>
-Student ID: {{ a.student_id }}
+<hr>
 
-Status: {{ a.status }}
+<table border="1">
 
-<a href="/company/application/{{a.id}}/Shortlisted">Shortlist</a>
+<tr>
+<th>Student Name</th>
+<th>Email</th>
+<th>Education</th>
+<th>Skills</th>
+<th>Resume</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
 
-<a href="/company/application/{{a.id}}/Interview">Interview</a>
+{% for app in applications %}
 
-<a href="/company/application/{{a.id}}/Placed">Select</a>
+<tr>
 
-<a href="/company/application/{{a.id}}/Rejected">Reject</a>
+<td>{{ app.student.name }}</td>
 
-</p>
+<td>{{ app.student.email }}</td>
+
+<td>{{ app.student.education }}</td>
+
+<td>{{ app.student.skills }}</td>
+
+<td>
+<a href="{{ url_for('static', filename='resumes/' + app.student.resume) }}">
+    View Resume
+</a>
+</td>
+
+<td>{{ app.status }}</td>
+
+<td>
+
+<a href="/company/application/shortlist/{{ app.id }}">Shortlist</a>
+
+|
+
+<a href="/company/application/reject/{{ app.id }}">Reject</a>
+
+|
+
+<a href="/company/application/select/{{ app.id }}">Select</a>
+
+</td>
+
+</tr>
 
 {% endfor %}
+
+</table>

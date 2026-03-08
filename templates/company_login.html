@@ -1,15 +1,21 @@
 <h2>Company Login</h2>
 
-<form method="POST">
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul>
+{% for message in messages %}
+<li>{{ message }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
 
-<p>Email</p>
+<form method="POST">
+Email
 <input name="email">
 
-<p>Password</p>
-<input name="password" type="password">
-
-<br><br>
+Password
+<input type="password" name="password">
 
 <button type="submit">Login</button>
-
 </form>

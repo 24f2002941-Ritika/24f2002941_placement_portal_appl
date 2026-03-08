@@ -1,22 +1,52 @@
 <h2>Student Dashboard</h2>
 
+<a href="/">Home</a> |
+<a href="/student/applications">My Applications</a> |
+<a href="/student/placements">Placement History</a> |
+<a href="/student/profile">Edit Profile</a>
+<a href="/logout">Logout</a>
+<hr>
 <h3>Available Jobs</h3>
-<a href="/student/applications">View Applications</a>
 
-<br><br>
 
-<a href="/student/placements">Placement History</a>
+<br>
 
-{% for j in jobs %}
+<h2>Available Placement Drives</h2>
 
-<p>
+<table border="1">
 
-{{ j.job_title }}
+<tr>
+<th>Drive ID</th>
+<th>Company</th>
+<th>Job Title</th>
+<th>Salary</th>
+<th>Deadline</th>
+<th>Applicants</th>
+<th>Action</th>
+</tr>
 
-{{ j.salary }}
+{% for job in jobs %}
 
-<a href="/student/apply/{{j.id}}">Apply</a>
+<tr>
 
-</p>
+<td>{{ job.id }}</td>
+
+<td>{{ job.company.name }}</td>
+
+<td>{{ job.job_title }}</td>
+
+<td>{{ job.salary }}</td>
+
+<td>{{ job.deadline }}</td>
+
+<td>{{ job.applications|length }}</td>
+
+<td>
+<a href="/student/job/{{ job.id }}">View</a>
+</td>
+
+</tr>
 
 {% endfor %}
+
+</table>

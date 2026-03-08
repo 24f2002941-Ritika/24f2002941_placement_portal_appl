@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, session
-from models import db, Student, Company, JobPosition, Application, Placement
+from models import db, Admin, Student, Company, JobPosition, Application,Placement
+from flask import jsonify
+from flask import flash
 
 app = Flask(__name__)
 app.secret_key = "secret"
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///placement.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -13,7 +14,30 @@ db.init_app(app)
 def home():
     return render_template("home.html")
 
+@app.before_request
+def setup_db():
 
+    if not hasattr(app, "db_initialized"):
+
+        with app.app_context():
+
+            db.create_all()
+
+            if not Admin.query.filter_by(username="admin").first():
+
+                admin = Admin(
+                    username="admin",
+                    password="admin123"
+                )
+
+                db.session.add(admin)
+                db.session.commit()
+
+        app.db_initialized = True
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")       
 @app.route("/admin/login", methods=["GET","POST"])
 def admin_login():
 
@@ -22,15 +46,21 @@ def admin_login():
         username = request.form["username"]
         password = request.form["password"]
 
-        admin = Admin.query.filter_by(username=username, password=password).first()
+        admin = Admin.query.filter_by(username=username).first()
 
-        if admin:
-            session["admin"] = admin.id
-            return redirect("/admin/dashboard")
+        if not admin:
+            flash("Admin does not exist")
+            return redirect("/admin/login")
+
+        if admin.password != password:
+            flash("Incorrect password")
+            return redirect("/admin/login")
+
+        session["admin"] = admin.id
+
+        return redirect("/admin/dashboard")
 
     return render_template("admin_login.html")
-
-
 @app.route("/admin/dashboard")
 def admin_dashboard():
 
@@ -170,14 +200,18 @@ def company_register():
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
-        hr = request.form["hr"]
         website = request.form["website"]
+
+        existing = Company.query.filter_by(email=email).first()
+
+        if existing:
+            flash("Company email already exists")
+            return redirect("/company/register")
 
         company = Company(
             name=name,
             email=email,
             password=password,
-            hr_contact=hr,
             website=website,
             approval_status="Pending"
         )
@@ -185,10 +219,12 @@ def company_register():
         db.session.add(company)
         db.session.commit()
 
-        return redirect("/company/login")
+        flash("Registration successful. Wait for admin approval.")
+
+        return render_template("company_register_success.html")
 
     return render_template("company_register.html")
-@app.route("/company/login", methods=["GET","POST"])
+@app.route("/company/login", methods=["GET", "POST"])
 def company_login():
 
     if request.method == "POST":
@@ -198,9 +234,29 @@ def company_login():
 
         company = Company.query.filter_by(email=email).first()
 
-        if company and company.password == password and company.approval_status == "Approved":
-            session["company"] = company.id
-            return redirect("/company/dashboard")
+        if not company:
+            flash("Company does not exist")
+            return redirect("/company/login")
+
+        if company.password != password:
+            flash("Invalid password")
+            return redirect("/company/login")
+
+        if company.approval_status == "Pending":
+            flash("Your company registration is waiting for admin approval")
+            return redirect("/company/login")
+
+        if company.approval_status == "Rejected":
+            flash("Your company registration was rejected by admin")
+            return redirect("/company/login")
+
+        if company.approval_status == "Blacklisted":
+            flash("Your company account has been blacklisted")
+            return redirect("/company/login")
+
+        # Approved
+        session["company"] = company.id
+        return redirect("/company/dashboard")
 
     return render_template("company_login.html")
 @app.route("/company/dashboard")
@@ -276,7 +332,7 @@ def view_applications(job_id):
     if job.company_id != company_id:
         return "Unauthorized"
 
-    applications = Application.query.filter_by(drive_id=job_id).all()
+    applications = Application.query.filter_by(job_id=job_id).all()
 
     return render_template(
         "company_applications.html",
@@ -381,8 +437,9 @@ def student_register():
 
         db.session.add(student)
         db.session.commit()
-
-        return redirect("/student/login")
+        flash("Student registered successfully")
+        return render_template("student_register_success.html")
+        
 
     return render_template("student_register.html")
 @app.route("/student/login", methods=["GET","POST"])
@@ -393,11 +450,19 @@ def student_login():
         email = request.form["email"]
         password = request.form["password"]
 
-        student = Student.query.filter_by(email=email, password=password).first()
+        student = Student.query.filter_by(email=email).first()
 
-        if student:
-            session["student"] = student.id
-            return redirect("/student/dashboard")
+        if not student:
+            flash("Student does not exist")
+            return redirect("/student/login")
+
+        if student.password != password:
+            flash("Incorrect password")
+            return redirect("/student/login")
+
+        session["student"] = student.id
+
+        return redirect("/student/dashboard")
 
     return render_template("student_login.html")
 @app.route("/student/dashboard", methods=["GET"])
@@ -454,31 +519,17 @@ def apply_job(job_id):
 
     student_id = session.get("student")
 
-    if not student_id:
-        return redirect("/student/login")
-
-    job = JobPosition.query.get(job_id)
-
-    if job.status != "Approved":
-        return "This placement drive is not open for applications."
-
-    if job.deadline:
-        deadline_date = datetime.strptime(job.deadline, "%Y-%m-%d")
-
-        if deadline_date < datetime.now():
-            return "Application deadline has passed."
-
     existing = Application.query.filter_by(
         student_id=student_id,
-        drive_id=job_id
+        job_id=job_id
     ).first()
 
     if existing:
-        return "You have already applied for this job."
+        return "Already applied"
 
     application = Application(
         student_id=student_id,
-        drive_id=job_id,
+        job_id=job_id,
         status="Applied",
         application_date=datetime.now()
     )
@@ -486,7 +537,16 @@ def apply_job(job_id):
     db.session.add(application)
     db.session.commit()
 
-    return redirect("/student/dashboard")
+    return redirect("/student/applications")
+@app.route("/student/job/<int:job_id>")
+def student_job_details(job_id):
+
+    job = JobPosition.query.get(job_id)
+
+    return render_template(
+        "student_job_details.html",
+        job=job
+    )
 @app.route("/student/applications")
 def student_applications():
 
@@ -536,5 +596,51 @@ def student_profile():
         return redirect("/student/dashboard")
 
     return render_template("student_profile.html", student=student)
+@app.route("/api/students")
+def api_students():
+
+    students = Student.query.all()
+
+    data = []
+
+    for s in students:
+        data.append({
+            "id": s.id,
+            "name": s.name,
+            "email": s.email,
+            "skills": s.skills
+        })
+
+    return jsonify(data)
+@app.route("/api/students/<int:id>")
+def api_student(id):
+
+    s = Student.query.get(id)
+
+    data = {
+        "id": s.id,
+        "name": s.name,
+        "email": s.email,
+        "skills": s.skills
+    }
+
+    return jsonify(data)
+
+@app.route("/api/companies")
+def api_companies():
+
+    companies = Company.query.all()
+
+    data = []
+
+    for c in companies:
+        data.append({
+            "id": c.id,
+            "name": c.name,
+            "website": c.website,
+            "status": c.approval_status
+        })
+
+    return jsonify(data)
 if __name__ == "__main__":
     app.run(debug=True)
