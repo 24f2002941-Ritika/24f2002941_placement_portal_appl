@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>{{ job.job_title }}</h2>
 
 <p><b>Company:</b> {{ job.company.name }}</p>
@@ -25,3 +27,4 @@
 <hr>
 
 <a href="/student/apply/{{ job.id }}">Apply</a>
+{% endblock %}

@@ -1,9 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>Company Login</h2>
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for message in messages %}
-    <div style="color:red; margin:10px 0;">
+    <div style="color:rgb(0, 217, 255); margin:10px 0;">
         {{ message }}
     </div>
 {% endfor %}.
@@ -19,3 +21,4 @@ Password
 
 <button type="submit">Login</button>
 </form>
+{% endblock %}

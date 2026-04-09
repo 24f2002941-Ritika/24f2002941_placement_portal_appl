@@ -1,5 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>Search Students</h2>
-<a href="admin/dashboard"> Back to Dashboard</a>
+<a href="/admin/dashboard"> Back to Dashboard</a>
 <form method="POST">
 
 <input name="query" placeholder="Student name">
@@ -12,3 +14,4 @@
 <p>{{ s.name }} - {{ s.email }}</p>
 
 {% endfor %}
+{% endblock %}

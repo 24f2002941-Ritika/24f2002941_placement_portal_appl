@@ -1,5 +1,8 @@
-<h1>Placement Portal</h1>
-
+{% extends "base.html" %}
+{% block content %}
+<div style="padding: 15px;background: rgb(242, 241, 241);box-shadow: 0 4px 10px rgba(0,0,0,0.1);border-radius: 15px;">
+<h1>Placement Portal App - Choose Your Role</h1>
+<br><br>
 <h2>Student</h2>
 <a href="/student/login">Student Login</a>
 <br>
@@ -16,3 +19,5 @@
 
 <h2>Admin</h2>
 <a href="/admin/login">Admin Login</a>
+</div>
+{% endblock %}

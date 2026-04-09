@@ -1,10 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>Applicants for {{ job.job_title }}</h2>
 
 <a href="/company/dashboard">Back to Dashboard</a>
 
 <hr>
 
-<table border="1">
+<table  style="width:100%; background-color: rgb(246, 246, 243);">
 
 <tr>
 <th>Student Name</th>
@@ -55,3 +57,4 @@
 {% endfor %}
 
 </table>
+{% endblock %}

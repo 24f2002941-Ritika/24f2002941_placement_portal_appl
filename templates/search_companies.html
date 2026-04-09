@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>Search Companies</h2>
 <a href="/admin/dashboard"> Back to Dashboard</a>
 <form method="POST">
@@ -12,3 +14,4 @@
 <p>{{ c.name }} - {{ c.approval_status }}</p>
 
 {% endfor %}
+{% endblock %}

@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>Student Dashboard</h2>
 
 <a href="/">Home</a> |
@@ -12,7 +14,7 @@
 
 <h2>Available Placement Drives</h2>
 
-<table border="1">
+<table style="width:100%;   background-color: rgb(246, 246, 243);">
 
 <tr>
 <th>Drive ID</th>
@@ -29,13 +31,11 @@
 <tr>
 
 <td>{{ job.id }}</td>
-
 <td>{{ job.company.name }}</td>
 
 <td>{{ job.job_title }}</td>
 
 <td>{{ job.salary }}</td>
-
 <td>{{ job.deadline }}</td>
 
 <td>{{ job.applications|length }}</td>
@@ -49,3 +49,4 @@
 {% endfor %}
 
 </table>
+{% endblock %}

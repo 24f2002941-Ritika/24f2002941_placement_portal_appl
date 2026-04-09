@@ -199,9 +199,9 @@ def company_register():
 
         name = request.form["name"]
         email = request.form["email"]
-     
         password = request.form["password"]
         website = request.form["website"]
+        
 
         existing = Company.query.filter_by(email=email).first()
 
@@ -418,7 +418,10 @@ def select_application(app_id):
         placement = Placement(
             student_id=application.student_id,
             job_id=application.job_id,
-            salary=application.job.salary
+
+            salary=application.job.salary,
+            company_id=application.job.company_id
+
         )
         db.session.add(placement)
 
@@ -497,10 +500,10 @@ def student_dashboard():
 @app.route("/student/edit_profile", methods=["GET", "POST"])
 def edit_profile():
 
-    if "student" not in session:
+    if "student_id" not in session:
         return redirect("/student/login")
 
-    student = Student.query.get(session["student"])
+    student = Student.query.get(session["student_id"])
 
     if request.method == "POST":
 

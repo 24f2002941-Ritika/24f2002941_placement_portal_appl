@@ -1,8 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>Company Registration</h2>
-
+<div style="padding: 15px;background: rgb(242, 241, 241);box-shadow: 0 4px 10px rgba(0,0,0,0.1);border-radius: 15px;">
 <form method="POST">
 
-<p>Company Name</p>
+<p >Company Name</p>
 <input name="name">
 
 <p>Email</p>
@@ -17,10 +19,10 @@
 <p>Website</p>
 <input name="website">
 
-
-
 <br><br>
 
 <button type="submit">Register</button>
 
 </form>
+</div>
+{% endblock %}

@@ -1,5 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>Create Job</h2>
 <a href="/company/dashboard"> Back to Dashboard</a>
+<div style="padding: 15px;background: rgb(241, 242, 244);box-shadow: 0 4px 10px rgba(0,0,0,0.1);border-radius: 15px;height: fit-content;">
 <form method="POST">
 
 Job Title
@@ -30,3 +33,5 @@ Application Deadline
 <button type="submit">Create Job</button>
 
 </form>
+</div>
+{% endblock %}

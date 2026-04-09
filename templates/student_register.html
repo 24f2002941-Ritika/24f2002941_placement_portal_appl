@@ -1,19 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
 <h2>Student Registration</h2>
-
+<div style="padding: 15px;background: rgb(241, 242, 244);box-shadow: 0 4px 10px rgba(0,0,0,0.1);border-radius: 15px;height: fit-content;">
 <form method="POST" enctype="multipart/form-data">
 
 <input name="name" placeholder="Name">
 
+<br>
+<br>
 <input name="email" placeholder="Email">
-
+<br>
+<br>
 <input name="password" placeholder="Password">
-
+<br>
+<br>
 <input name="education" placeholder="Education">
 
+<br>
+<br>
 <input name="skills" placeholder="Skills">
-
+<br>
+<br>
 <input type="file" name="resume">
-
-<button>Register</button>
+<br>
+<br>
+<button style="border-radius: 10px; color: rgb(25, 5, 5); background-color:rgb(227, 227, 216)">Register</button>
 
 </form>
+</div>
+{% endblock %}
