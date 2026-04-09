@@ -564,16 +564,18 @@ def edit_job(id):
 
     return render_template("edit_job.html", job=job)
 from datetime import datetime
-
 @app.route("/student/apply/<int:job_id>")
 def apply_job(job_id):
 
     student_id = session.get("student_id")
 
+    if not student_id:
+        return redirect("/student/login")
+
     job = JobPosition.query.get(job_id)
 
     if job.status == "Closed":
-        return "This job is closed"
+        return render_template("message.html", msg="This job is closed")
 
     existing = Application.query.filter_by(
         student_id=student_id,
@@ -581,7 +583,7 @@ def apply_job(job_id):
     ).first()
 
     if existing:
-        return "Already applied"
+        return render_template("message.html", msg="Already applied")
 
     application = Application(
         student_id=student_id,
@@ -592,7 +594,7 @@ def apply_job(job_id):
     db.session.add(application)
     db.session.commit()
 
-    return redirect("/student/jobs")
+    return render_template("message.html", msg="Applied successfully")
 @app.route("/student/job/<int:job_id>")
 def student_job_details(job_id):
 
