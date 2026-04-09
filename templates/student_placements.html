@@ -4,7 +4,7 @@
 
 <a href="/student/dashboard">Back to Dashboard</a>
 
-<table border="1">
+<table style="width:100%;   background-color: rgb(246, 246, 243);">
 
 <tr>
 <th>Company</th>
@@ -13,9 +13,7 @@
 </tr>
 
 {% for placement in placements %}
-
 <tr>
-
 <td>{{ placement.job.company.name if placement.job else "N/A" }}</td>
 <td>{{ placement.job.job_title if placement.job else "N/A" }}</td>
 <td>{{ placement.job.salary if placement.job else "N/A" }}</td>

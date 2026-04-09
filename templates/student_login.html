@@ -5,11 +5,11 @@
 <a href="/">Home</a>
 <hr>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
+{% with msgs = get_flashed_messages() %}
+{% if msgs %}
 <ul>
-{% for message in messages %}
-<li style="color:red;">{{ message }}</li>
+{% for msg in msgs %}
+<li style="color:red;">{{ msg }}</li>
 {% endfor %}
 </ul>
 {% endif %}
@@ -19,11 +19,10 @@
 
 <label>Email</label><br>
 <input type="email" name="email" required><br><br>
-
 <label>Password</label><br>
 <input type="password" name="password" required><br><br>
 
-<button type="submit">Login</button>
+    <button type="submit">Login</button>
 
 </form>
 

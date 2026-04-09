@@ -21,18 +21,14 @@
 {% for app in applications %}
 
 <tr>
-
 <td>{{ app.student.name }}</td>
-
 <td>{{ app.student.email }}</td>
-
 <td>{{ app.student.education }}</td>
-
 <td>{{ app.student.skills }}</td>
 
 <td>
 <a href="{{ url_for('static', filename='resumes/' + app.student.resume) }}">
-    View Resume
+    View the Resume
 </a>
 </td>
 
@@ -42,11 +38,9 @@
 
 <a href="/company/application/shortlist/{{ app.id }}">Shortlist</a>
 
-|
+
 
 <a href="/company/application/reject/{{ app.id }}">Reject</a>
-
-|
 
 <a href="/company/application/select/{{ app.id }}">Select</a>
 

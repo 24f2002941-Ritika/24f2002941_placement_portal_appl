@@ -4,12 +4,11 @@
 
 <a href="/">Home</a>
 <hr>
-
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 <ul>
 {% for message in messages %}
-<li style="color:red;">{{ message }}</li>
+<li style="color:rgb(58, 98, 228);">{{ message }}</li>
 {% endfor %}
 </ul>
 {% endif %}
@@ -22,7 +21,6 @@
 
 <label>Password</label><br>
 <input type="password" name="password" required><br><br>
-
 <button type="submit">Login</button>
 
 </form>

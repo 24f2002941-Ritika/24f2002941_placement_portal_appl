@@ -1,16 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Companies</h2>
+<h2>Companies List</h2>
 <a href="/admin/dashboard"> Back to Dashboard</a>
 {% for c in companies %}
-
 <p>
-{{ c.name }} - {{ c.approval_status }}
-
+ <div style="margin-bottom: 10px;">
+{{ c.name }} ---- {{ c.approval_status }}
+<div>
 <a href="/admin/company/{{c.id}}/approve">Approve</a>
+
 <a href="/admin/company/{{c.id}}/reject">Reject</a>
 <a href="/admin/company/{{c.id}}/deactivate">Blacklist</a>
-
+</div>
+</div>
 </p>
 
 {% endfor %}

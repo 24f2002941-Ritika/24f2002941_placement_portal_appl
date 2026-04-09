@@ -10,13 +10,9 @@ class Company(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
-
     email = db.Column(db.String(200), unique=True)
-
     password = db.Column(db.String(200))
-
     hr_contact = db.Column(db.String(100))
-
     website = db.Column(db.String(200))
 
     approval_status = db.Column(db.String(50))
@@ -27,9 +23,7 @@ class Student(db.Model):
     email = db.Column(db.String(200), unique=True)
 
     password = db.Column(db.String(200))
-
     education = db.Column(db.String(200))
-
     skills = db.Column(db.String(200))
 
     resume = db.Column(db.String(200))
@@ -37,21 +31,14 @@ class Student(db.Model):
     applications = db.relationship('Application', backref='student', lazy=True)
 
 class JobPosition(db.Model):
-
     id = db.Column(db.Integer, primary_key=True)
-
     job_title = db.Column(db.String(200))
-
     job_description = db.Column(db.Text)
-
     eligibility = db.Column(db.String(200))
-
     salary = db.Column(db.Integer)
-
     deadline = db.Column(db.String(100))
 
     status = db.Column(db.String(50))
-
     company_id = db.Column(db.Integer, db.ForeignKey("company.id"))
     company=db.relationship("Company",backref="jobs")
     
@@ -70,4 +57,5 @@ class Placement(db.Model):
     job_id=db.Column(db.Integer,db.ForeignKey('job_position.id'))
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
+    
     job=db.relationship("JobPosition")

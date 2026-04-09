@@ -1,18 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Placement Drives</h2>
-<a href="/admin/dashboard"> Back to Dashboard</a>
+<a href="/admin/dashboard"> Back to Dashboard</a><br><br>
+<div style="margin-bottom: 20px;background-color: aliceblue; box-shadow: 0 4px 10px white;">
+
+
 {% for j in jobs %}
 
 <p>
-
 {{ j.job_title }} - {{ j.status }}
 
-<a href="/admin/job/{{j.id}}/approve">Approve</a>
+<a href="/admin/job/{{j.id}}/approve">[ Approve ,</a>
 
-<a href="/admin/job/{{j.id}}/reject">Reject</a>
+<a href="/admin/job/{{j.id}}/reject">Reject ]</a>
 
 </p>
 
 {% endfor %}
+</div>
 {% endblock %}

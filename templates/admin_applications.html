@@ -2,13 +2,17 @@
 {% block content %}
 <h1>All Applications</h1>
 <a href="/admin/dashboard"> Back to Dashboard</a>
+    <div style="background-color: rgb(244, 250, 250); border-radius: 10px ; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
 {% for app in applications %}
-
 <p>
+
 Student: {{ app.student_id }}
-Drive: {{ app.drive_id }}
+&nbsp;
+Drive_id : {{ app.job_id     }}&nbsp;
 Status: {{ app.status }}
+
 </p>
 
 {% endfor %}
+</div>
 {% endblock %}
