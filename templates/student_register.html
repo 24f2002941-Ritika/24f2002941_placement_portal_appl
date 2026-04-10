@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "main.html" %}
 {% block content %}
 <h2>Student Registration</h2>
 <div style="padding: 15px;background: rgb(241, 242, 244);box-shadow: 0 4px 10px rgba(0,0,0,0.1);border-radius: 15px;height: fit-content;">
@@ -10,7 +10,7 @@
 <input name="email" placeholder="Email">
 <br>
 <br>
-<input name="password" placeholder="Password">
+<input type="password" name="password" placeholder="Password">
 <br>
 <br>
 <input name="education" placeholder="Education">
@@ -18,6 +18,8 @@
 <br>
 <input name="skills" placeholder="Skills">
 <br>
+<br>
+Upload Resume:(Mandatory)
 <br>
 <input type="file" name="resume">
 <br>

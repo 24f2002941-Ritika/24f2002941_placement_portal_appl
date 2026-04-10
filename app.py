@@ -389,22 +389,43 @@ def student_register():
         email = request.form["email"]
         password = request.form["password"]
 
+        education = request.form["education"]
+        skills = request.form["skills"]
+
+        resume = request.files["resume"]
+
         existing = Student.query.filter_by(email=email).first()
 
         if existing:
             return "Email already exists"
 
+        filename = None
+
+        if resume and resume.filename != "":
+            import os
+            from werkzeug.utils import secure_filename
+            filename = secure_filename(resume.filename)
+
+            upload_folder = os.path.join(app.root_path, "static", "resumes")
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+
+            filepath = os.path.join(upload_folder, filename)
+            resume.save(filepath)
+
         student = Student(
             name=name,
             email=email,
-            password=password
+            password=password,
+            education=education,
+            skills=skills,
+            resume=filename
         )
 
         db.session.add(student)
         db.session.commit()
 
         return redirect("/student/login")
-
     return render_template("student_register.html")
 @app.route("/student/login", methods=["GET","POST"])
 def student_login():
